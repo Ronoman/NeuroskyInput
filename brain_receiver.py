@@ -23,27 +23,31 @@ while True:
     if(len(c) == 0):
         continue
 
+    c = ord(c)
+
     if(status == Status.WAITING_FOR_SYNC):
-        if(ord(c) == 170):
+        if(c == 170):
             status = Status.CONFIRMING_SYNC
             print("sync 1")
+            continue
 
     if(status == Status.CONFIRMING_SYNC):
-        if(ord(c) == 170):
+        if(c == 170):
             status = Status.READING_PLENGTH
             print("synced")
             continue
 
     if(status == Status.READING_PLENGTH):
-        plength = ord(c)
+        print(c)
+        plength = c
         status = Status.READING_PAYLOAD
-        print("Length is " + str(ord(c)))
+        print("Length is " + str(c))
         continue
 
     if(status == Status.READING_PAYLOAD):
-        data.append(ord(c))
+        data.append(c)
         plength_read += 1
-        chksum += ord(c)
+        chksum += c
         if(plength_read == plength):
             status = Status.CHKSUM_VERIFY
             print("Done reading packet")
@@ -51,7 +55,7 @@ while True:
 
     if(status == Status.CHKSUM_VERIFY):
         #TODO: Write verification code
-        verify_chksum = ord(c)
+        verify_chksum = c
 
         print("Packet received, printing")
         print(data)
@@ -63,4 +67,4 @@ while True:
         verify_chksum = 0
         status = Status.WAITING_FOR_SYNC
 
-    print(ord(c))
+    #print(ord(c))
