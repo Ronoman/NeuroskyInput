@@ -18,6 +18,10 @@ data = []
 chksum = 0
 verify_chksum = 0
 
+monitor.write(8)
+
+monitor = serial.Serial('/dev/ttyS0', 57600, timeout=0.001)
+
 while True:
     c = monitor.read()
     if(len(c) == 0):
