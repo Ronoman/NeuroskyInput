@@ -1,4 +1,5 @@
-import serial, Enum
+import serial
+from enum import Enum
 
 monitor = serial.Serial('/dev/ttyS0', 9600, timeout=0.001)
 
@@ -20,7 +21,7 @@ verify_chksum = 0
 while True:
     c = monitor.read()
     if(len(c) == 0):
-        break
+        continue
 
     if(status == Status.WAITING_FOR_SYNC):
         if(ord(c) == 170):
@@ -28,22 +29,25 @@ while True:
             print("sync 1")
 
     if(status == Status.CONFIRMING_SYNC):
-        if(c == 0xAA):
-            status == Status.READING_PLENGTH
+        if(ord(c) == 170):
+            status = Status.READING_PLENGTH
             print("synced")
+            continue
 
     if(status == Status.READING_PLENGTH):
         plength = ord(c)
-        status == Status.READING_PAYLOAD
+        status = Status.READING_PAYLOAD
         print("Length is " + str(ord(c)))
+        continue
 
     if(status == Status.READING_PAYLOAD):
         data.append(ord(c))
         plength_read += 1
-        chksum += c
+        chksum += ord(c)
         if(plength_read == plength):
             status = Status.CHKSUM_VERIFY
             print("Done reading packet")
+            continue
 
     if(status == Status.CHKSUM_VERIFY):
         #TODO: Write verification code
@@ -57,3 +61,6 @@ while True:
         data = []
         chksum = 0
         verify_chksum = 0
+        status = Status.WAITING_FOR_SYNC
+
+    print(ord(c))
