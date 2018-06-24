@@ -1,4 +1,4 @@
-import serial
+import serial, Enum
 
 monitor = serial.Serial('/dev/ttyS0', 9600, timeout=0.001)
 
@@ -37,8 +37,8 @@ while True:
         status == Status.READING_PAYLOAD
         print("Length is " + str(ord(c)))
 
-    if(status == Status.READING_LENGTH):
-        data.append(c)
+    if(status == Status.READING_PAYLOAD):
+        data.append(ord(c))
         plength_read += 1
         chksum += c
         if(plength_read == plength):
@@ -49,5 +49,11 @@ while True:
         #TODO: Write verification code
         verify_chksum = ord(c)
 
-    print("Packet received, printing")
-    print(data)
+        print("Packet received, printing")
+        print(data)
+
+        plength = 0
+        plength_read = 0
+        data = []
+        chksum = 0
+        verify_chksum = 0
