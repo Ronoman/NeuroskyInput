@@ -11,11 +11,11 @@ class Status(Enum):
 
 status = Status.WAITING_FOR_SYNC
 
-plength = 0x00 #Length of the packet to be read
+plength = 0 #Length of the packet to be read
 plength_read = 0 #Number of bytes read so far
 data = []
-chksum = 0x00
-verify_chksum = 0x00
+chksum = 0
+verify_chksum = 0
 
 while True:
     c = monitor.read()
@@ -23,27 +23,31 @@ while True:
         break
 
     if(status == Status.WAITING_FOR_SYNC):
-        if(c == 0xAA):
+        if(ord(c) == 170):
             status = Status.CONFIRMING_SYNC
+            print("sync 1")
 
     if(status == Status.CONFIRMING_SYNC):
         if(c == 0xAA):
             status == Status.READING_PLENGTH
+            print("synced")
 
     if(status == Status.READING_PLENGTH):
-        plength = int(hex(c))
-        chksum += c
+        plength = ord(c)
         status == Status.READING_PAYLOAD
+        print("Length is " + str(ord(c)))
 
     if(status == Status.READING_LENGTH):
         data.append(c)
         plength_read += 1
+        chksum += c
         if(plength_read == plength):
             status = Status.CHKSUM_VERIFY
+            print("Done reading packet")
 
     if(status == Status.CHKSUM_VERIFY):
         #TODO: Write verification code
-        verify_chksum = c
+        verify_chksum = ord(c)
 
     print("Packet received, printing")
     print(data)
