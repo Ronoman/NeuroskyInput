@@ -18,7 +18,7 @@ data = []
 chksum = 0
 verify_chksum = 0
 
-monitor.write(8)
+monitor.write(b'2')
 
 monitor = serial.Serial('/dev/ttyS0', 57600, timeout=0.001)
 
@@ -72,3 +72,11 @@ while True:
         status = Status.WAITING_FOR_SYNC
 
     #print(ord(c))
+
+def parse_data(data):
+    done = False
+    i = 0
+
+    while(not done):
+        if(data[i] == 128): #RAW Wave Value. 2 two's-complement bytes follow
+            pass
