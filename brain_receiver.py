@@ -1,5 +1,6 @@
 import serial
 import pickle
+import socket
 from enum import Enum
 
 monitor = serial.Serial('/dev/ttyS0', 9600, timeout=0.001)
@@ -126,7 +127,7 @@ def parse_data(data):
             i += 2
 
         elif(data[i] == 128): #RAW Wave Value. 2 two's-complement bytes follow (0x80)
-            wave_val = bytesToInt(data[i+1:i+3]), True, True)
+            wave_val = bytesToInt(data[i+1:i+3], True, True)
             packet["raw_wave"] = wave_val
             i += 3
 
