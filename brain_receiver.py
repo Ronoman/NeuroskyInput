@@ -37,8 +37,10 @@ def bytesToInt(byteArray, isBigEndian, isSigned):
     int.from_bytes(bytes(byteArray), byteorder=endian, signed=isSigned)
 
 def parse_data(data):
+    data = data[:-1]
     done = False
     i = 0
+    print("Starting parsing")
 
     packet = {
         "signal_quality": None,
@@ -54,40 +56,52 @@ def parse_data(data):
     }
 
     while(not done):
+        print("len: " + str(len(data)))
+        print("cur: " + str(i))
+        print(data)
         if(data[i] == 2): #POOR_SIGNAL Quality (0-255) 0x02
+            print(2)
             packet["signal_quality"] = data[i+1]
             i += 2
 
         elif(data[i] == 3): #HEART_RATE (0-255) 0x03
+            print(3)
             packet["heart_rate"] = data[i+1]
             i += 2
 
         elif(data[i] == 4): #ATTENTION eSense (0-100) 0x04
+            print(4)
             packet["attention_esense"] = data[i+1]
             i += 2
 
         elif(data[i] == 5): #MEDITATION eSense (0-100) 0x05
+            print(5)
             packet["meditation_esense"] = data[i+1]
             i += 2
 
         elif(data[i] == 6): #8BIT_RAW Wave Value (0-255) 0x06
+            print(6)
             packet["8bit_raw_wave"] = data[i+1]
             i += 2
 
         elif(data[i] == 7): #RAW_MARKER Section (0) 0x07
+            print(7)
             packet["raw_marker"] = data[i+1]
             i += 2
 
         elif(data[i] == 128): #RAW Wave Value. 2 two's-complement bytes follow (0x80)
+            print(128)
             wave_val = bytesToInt(data[i+1:i+3], True, True)
             packet["raw_wave"] = wave_val
             i += 3
 
         elif(data[i] == 129): #EEG_POWER 0x81
+            print(129)
             #do some funky IEEE 754 float conversions
             i += 9
 
         elif(data[i] == 131): #ASIC_EEG_POWER. 8 3-byte unsigned ints  0x83
+            print(131)
             delta = bytesToInt(data[i+1:i+4], True, False)
             theta = bytesToInt(data[i+4:i+7], True, False)
             low_alpha = bytesToInt(data[i+7:i+10], True, False)
@@ -98,11 +112,15 @@ def parse_data(data):
             mid_gamma = bytesToInt(data[i+22:i+25], True, False)
 
             packet["asic_eeg_power"] = [delta, theta, low_alpha, high_alpha, low_beta, low_gamma, mid_gamma]
+            i += 25
 
         elif(data[i] == 134): #RRINTERVAL 0x86
+            print(134)
             i += 3
 
-        if(i == len(data)):
+        #print(data)
+
+        if(i >= len(data)):
             done = True
             print(packet)
     return packet
