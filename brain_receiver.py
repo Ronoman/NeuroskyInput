@@ -36,54 +36,6 @@ def bytesToInt(byteArray, isBigEndian, isSigned):
     endian = 'big' if isBigEndan else 'little'
     int.from_bytes(bytes(byteArray), byteorder=endian, signed=isSigned)
 
-while True:
-    c = monitor.read()
-    if(len(c) == 0):
-        continue
-
-    c = ord(c) #Turn hex into decimal to compare against
-
-    if(status == Status.WAITING_FOR_SYNC):
-        if(c == 170):
-            status = Status.CONFIRMING_SYNC
-            continue
-
-    if(status == Status.CONFIRMING_SYNC):
-        if(c == 170):
-            status = Status.READING_PLENGTH
-            continue
-
-    if(status == Status.READING_PLENGTH):
-        plength = c
-        status = Status.READING_PAYLOAD
-        continue
-
-    if(status == Status.READING_PAYLOAD):
-        data.append(c)
-        plength_read += 1
-        chksum += c
-        if(plength_read == plength):
-            status = Status.CHKSUM_VERIFY
-            continue
-
-    if(status == Status.CHKSUM_VERIFY):
-        #TODO: Write verification code
-        verify_chksum = c
-
-        print("Packet received, printing")
-        print(data)
-
-        parsed = parse_data(data)
-        send_data(parsed)
-
-        #Reset the packet specific variables
-        plength = 0
-        plength_read = 0
-        data = []
-        chksum = 0
-        verify_chksum = 0
-        status = Status.WAITING_FOR_SYNC
-
 def parse_data(data):
     done = False
     i = 0
@@ -151,3 +103,51 @@ def parse_data(data):
             i += 3
 
         return packet
+
+while True:
+    c = monitor.read()
+    if(len(c) == 0):
+        continue
+
+    c = ord(c) #Turn hex into decimal to compare against
+
+    if(status == Status.WAITING_FOR_SYNC):
+        if(c == 170):
+            status = Status.CONFIRMING_SYNC
+            continue
+
+    if(status == Status.CONFIRMING_SYNC):
+        if(c == 170):
+            status = Status.READING_PLENGTH
+            continue
+
+    if(status == Status.READING_PLENGTH):
+        plength = c
+        status = Status.READING_PAYLOAD
+        continue
+
+    if(status == Status.READING_PAYLOAD):
+        data.append(c)
+        plength_read += 1
+        chksum += c
+        if(plength_read == plength):
+            status = Status.CHKSUM_VERIFY
+            continue
+
+    if(status == Status.CHKSUM_VERIFY):
+        #TODO: Write verification code
+        verify_chksum = c
+
+        print("Packet received, printing")
+        print(data)
+
+        parsed = parse_data(data)
+        send_data(parsed)
+
+        #Reset the packet specific variables
+        plength = 0
+        plength_read = 0
+        data = []
+        chksum = 0
+        verify_chksum = 0
+        status = Status.WAITING_FOR_SYNC
