@@ -162,8 +162,9 @@ while True:
         print("Packet received, printing")
         print(data)
 
+        send_data(data)
         parsed = parse_data(data)
-        send_data(parsed)
+        #send_data(parsed)
 
         #Reset the packet specific variables
         plength = 0
