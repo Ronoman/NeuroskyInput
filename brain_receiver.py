@@ -21,6 +21,7 @@ status = Status.WAITING_FOR_SYNC
 plength = 0 #Length of the packet to be read
 plength_read = 0 #Number of bytes read so far
 data = []
+complete_packet = []
 chksum = 0
 verify_chksum = 0
 
@@ -132,6 +133,8 @@ while True:
 
     c = ord(c) #Turn hex into decimal to compare against
 
+    complete_packet.append(c)
+
     if(status == Status.WAITING_FOR_SYNC):
         if(c == 170):
             status = Status.CONFIRMING_SYNC
@@ -162,7 +165,7 @@ while True:
         print("Packet received, printing")
         print(data)
 
-        send_data(data)
+        send_data(complete_packet)
         parsed = parse_data(data)
         #send_data(parsed)
 
