@@ -102,7 +102,9 @@ def parse_data(data):
         elif(data[i] == 134): #RRINTERVAL 0x86
             i += 3
 
-        return packet
+        if(i == len(data)):
+            done = True
+    return packet
 
 while True:
     c = monitor.read()
