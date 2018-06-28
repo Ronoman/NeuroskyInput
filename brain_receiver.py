@@ -2,6 +2,7 @@ import serial
 import pickle
 import socket
 from enum import Enum
+import time
 
 monitor = serial.Serial('/dev/ttyS0', 9600, timeout=0.001)
 
@@ -181,3 +182,4 @@ while True:
         chksum = 0
         verify_chksum = 0
         status = Status.WAITING_FOR_SYNC
+        time.sleep(0.25)
