@@ -28,12 +28,12 @@ monitor.write(b'2') #Swap to 57600 baud (Command code 0000 1000)
 
 monitor = serial.Serial('/dev/ttyS0', 57600, timeout=0.001)
 
-def sendData(packet):
+def send_data(packet):
     serialized = pickle.dumps(packet)
     sock.sendto(serialized, (UDP_IP, UDP_PORT))
 
 def bytesToInt(byteArray, isBigEndian, isSigned):
-    endian = 'big' if isBigEndan else 'little'
+    endian = 'big' if isBigEndian else 'little'
     int.from_bytes(bytes(byteArray), byteorder=endian, signed=isSigned)
 
 def parse_data(data):
@@ -102,6 +102,7 @@ def parse_data(data):
         elif(data[i] == 134): #RRINTERVAL 0x86
             i += 3
 
+        print(packet)
         return packet
 
 while True:
