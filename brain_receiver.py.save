@@ -35,7 +35,7 @@ def send_data(packet):
 
 def bytesToInt(byteArray, isBigEndian, isSigned):
     endian = 'big' if isBigEndian else 'little'
-    return int.from_bytes(bytes(byteArray), byteorder=endian, signed=isSigned)
+    int.from_bytes(bytes(byteArray), byteorder=endian, signed=isSigned)
 
 def parse_data(data):
     #data = data[:-1]
@@ -95,7 +95,6 @@ def parse_data(data):
             i += 1 #LENGTH offset
             wave_val = bytesToInt(data[i+1:i+3], True, True)
             packet["raw_wave"] = wave_val
-            print(packet)
             i += 3
 
         elif(data[i] == 129): #EEG_POWER 0x81
@@ -120,14 +119,15 @@ def parse_data(data):
             i += 25
 
         elif(data[i] == 134): #RRINTERVAL 0x86
+y
             print(134)
             i += (3+1) #+1 for LENGTH offset
 
         #print(data)
-        #print(packet)
+
         if(i >= len(data)):
             done = True
-            #print(packet)
+            print(packet)
     return packet
 
 while True:
